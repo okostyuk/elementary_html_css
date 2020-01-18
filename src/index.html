@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto&display=swap">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+<form action="/submitCheckout">
+    <div class="formPanel">
+        <div class="FormHeader">Checkout form</div>
+
+        <hr class="formDivider"/>
+
+        <div class="formSection" id="sectionOne">
+            <div class="inputLayout">
+                <input type="text" name="first_name" placeholder="First name"/>
+                <i class="medium material-icons">person</i>
+                <hr class="inputDivider" />
+            </div>
+            <div class="inputLayout">
+                <input type="text" name="last_name" placeholder="Last name"/>
+                <i class="medium material-icons">person</i>
+                <hr class="inputDivider" />
+            </div>
+
+            <div class="inputLayout">
+                <input type="text" name="email" placeholder="E-mail"/>
+                <i class="medium material-icons">email</i>
+                <hr class="inputDivider" />
+            </div>
+            <div class="inputLayout">
+                <input type="text" name="phone" placeholder="Phone"/>
+                <i class="medium material-icons">phone</i>
+                <hr class="inputDivider" />
+            </div>
+        </div>
+
+        <hr class="formDivider"/>
+
+        <div class="formSection" id="sectionTwo">
+            <select id="countrySelect" name="country">
+                <option value="" disabled selected style='display:none;'>Country</option>
+                <option value="UA">Ukraine</option>
+                <option value="AU">Austria</option>
+                <option value="XX">SomeLooooongName</option>
+            </select>
+
+            <input id="cityField" type="text" name="city" placeholder="City" style="position: relative;"/>
+            <input id="postalCodeField" type="text" name="post_code" placeholder="Post code" style="float: right;"/>
+            <br/>
+            <input id="addressField" type="text" name="address" placeholder="Address"/>
+
+            <textarea id="additionalInfoField" name="additional_info" placeholder="Additional info" rows="3"></textarea>
+        </div>
+
+        <hr class="formDivider"/>
+
+        <div class="formSection" id="sectionThree">
+            <div class="RadioGroupWrapper">
+                <input id="VisaRadio" type="radio" name="paymetMethod" value="Visa" >
+                <label for="VisaRadio" class="RadioInputLabel">Visa</label>
+
+                <input id="MasterCardRadio" type="radio" name="paymetMethod" value="MasterCard">
+                <label for="MasterCardRadio" class="RadioInputLabel">MasterCard</label>
+
+                <input id="PayPalRadio" type="radio" name="paymetMethod" value="PayPal">
+                <label for="PayPalRadio" class="RadioInputLabel">PayPal</label>
+            </div>
+
+            <div>
+                <input id="cardholderName" type="text" name="cardholder_name" placeholder="Name on card"/>
+            </div>
+            <div style="margin-bottom:32px;">
+                <input id="cardNumber" type="text" name="card_number" placeholder="Card number"/>
+                <div style="float:right;">
+                    <input id="cvv2" type="text" name="cvv" placeholder="CVV2"/>
+                </div>
+                <div></div>
+            </div>
+            <br/>
+            <div style="height: 48px;">
+                <div style="float:left;">
+                    <p id="expDateLabel">Expiration date</p>
+                </div>
+                <div style="float:right;">
+                    <input id="expDateYear" type="text" name="expDateYear" placeholder="Year"/>
+                </div>
+                <div style="float:right;">
+                    <select id="expDateMonth" name="expDateMonth">
+                        <option value="" disabled selected style='display:none;'>Month</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <hr class="formDivider"/>
+        <div class="FormHeader">
+            <input id="continueButton"type="submit" value="Continue">
+        </div>
+    </div>
+</form>
+
+</body>
+</html>

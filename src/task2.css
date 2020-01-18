@@ -1,0 +1,134 @@
+:root {
+  --border-color: #E5E5E5;
+  --placeholder-color: #ABA6AC;
+}
+
+body {
+    #background: linear-gradient(135deg, #C6C2FD 0%, #ADB7FC 50%, #212356 100%);
+    background: #C6C2FD;
+    font-family: 'Roboto', sans-serif;
+}
+
+.formPanel {
+    width: 650px;
+    margin: 35px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.formDivider {
+    height: 1px;
+    background: var(--border-color);
+    border: 0px solid var(--border-color);
+    margin: 0px;
+}
+
+.formTitle {
+    color: #404040;
+    font-size: 30px;
+    background: #F0F0F8;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.formSection {
+    border: 1px solid var(--border-color);
+    background: #FAF9FE;
+    padding: 24px;
+}
+
+#sectionOne {
+    height: 100px;
+}
+
+#sectionOne .inputLayout2:nth-child(2n+1) { float: left;  }
+#sectionOne .inputLayout2:nth-child(2n+2) { float: right; }
+
+.inputLayout2 { position: relative; margin-bottom: 24px;}
+
+.inputLayout2 i { position: absolute; left: 5px; top: 50%; transform: translate(0%, -50%); color: #ABA6AC}
+
+.inputLayout2 input {
+    width: 242px;
+    padding-left: 42px;
+}
+
+.inputDivider {
+    position: absolute;
+    border: 1px solid var(--border-color);
+    width: 0px;
+    height: 24px;
+    left: 34px;
+    top: 50%; transform: translate(0%, -50%);
+    margin: 0px;
+}
+
+textarea, input {
+    min-height: 34px;
+    font-size: 16px;
+    padding-left: 8px;
+    border: 1px solid var(--border-color);
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--placeholder-color);;
+}
+
+#sectionTwo input {
+    padding-left: 8px;
+}
+
+#countrySelect {
+    height: 36px;
+    width: 220px;
+    margin-right: 24px;
+}
+
+#cityField {
+    width: 166px;
+    padding-right: 24px;
+    margin-bottom: 24px;
+}
+
+#postalCodeField {
+    width: 120px;
+}
+
+#addressField {
+    width: 590px;
+    margin-bottom: 24px;
+}
+
+#additionalInfoField {
+    width: 582px;
+    padding: 8px;
+}
+
+label {
+    font-size: 16px;
+    margin-right: 24px;
+}
+
+.RadioGroupWrapper {
+    margin-bottom: 24px;
+}
+
+.RadioGroupWrapper input {
+    min-height: 0px;
+}
+
+#cardholderName {
+    width: 590px;
+    margin-bottom: 25px;
+}
+
+#cardNumber {
+    width: 500px;
+    margin-right: 25px;
+}
+
+#cvv2 {
+    width: 50px;
+    margin-bottom: 25px;
+}
