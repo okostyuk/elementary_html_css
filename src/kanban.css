@@ -1,0 +1,53 @@
+body {
+    padding: 24px;
+    background: #8e24aa;
+}
+
+.header {
+    background: #4d2c91;
+    font-size: 30px;
+    color: white;
+    height: 56px;
+}
+
+.dragower > .header{
+    background: #FF0000;
+}
+
+.column {
+    float:left;
+    background: white;
+    min-width: 320px;
+    //padding: 12px;
+    margin-left: 48px;
+}
+
+.column.dragower {
+    //background: #7e57c2;
+}
+
+.task {
+    border-bottom: 1px solid #e3e3e3 ;
+    width: 320px;
+    min-height: 56px;
+    padding: 8px;
+    cursor: move;
+}
+.task.draged {
+    background: #b085f5;
+}
+
+.task.dragover {
+    margin-bottom: 56px;
+}
+
+
+#selectedTask {
+    position: absolute;
+    left: 300px;
+    top: 50px;
+}
+
+.header {
+    alignment: center;
+}
