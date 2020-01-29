@@ -1,86 +1,126 @@
+// Fiddle url: https://jsfiddle.net/okostyuk/u5ch2md7/
 
 let currentDroppable;
 
 let tasks = document.getElementsByClassName("task");
+let headers = document.getElementsByClassName("header");
+
+function hidePreview(dragStartEvent) {
+    var copyItem = this.cloneNode(true);
+    copyItem.style.display = "none";
+    dragStartEvent.dataTransfer.setDragImage(copyItem, 0, 0);
+}
+
+function initStaticPos(dragStartEvent, task) {
+    task.shiftX = dragStartEvent.clientX - task.getBoundingClientRect().left;
+    task.shiftY = dragStartEvent.clientY - task.getBoundingClientRect().top;
+    task.style.left = dragStartEvent.pageX-task.shiftX +'px';
+    task.style.top = dragStartEvent.pageY-task.shiftY + 'px';
+}
+
+function updateStaticPos(event, task) {
+    task.style.left = event.pageX-task.shiftX +'px';
+    task.style.top = event.pageY-task.shiftY + 'px';
+}
+
+const draggedClass = "draged";
+const expandClass = "expandTask";
+const classCollapse = "collapseTask";
+
+function createPlaceholder() {
+    return document.createElement("div");
+}
+
+function createDragPreview(task) {
+    //make preview and move it off the screen
+    let preview = task.cloneNode(true);
+    preview.style.position = 'absolute';
+    preview.style.left = '-500px';
+    return preview;
+}
 
 for (let task of tasks) {
+
+    //  *** handle drag of this item    *** //
     task.draggable = true;
-    //onDragStart(item);
     task.ondragstart = function(event) {
+        console.log("task onDragStart()");
         currentDroppable = task;
-        //task.style.position = 'absolute';
-
-        //shiftX = event.clientX - task.getBoundingClientRect().left;
-        //shiftY = event.clientY - task.getBoundingClientRect().top;
-        //task.style.left = event.pageX-shiftX +'px';
-        //task.style.top = event.pageY-shiftY + 'px';
-
-        //task.remove();
-        //document.body.append(task);
-
-        task.classList.add("draged");
+        task.dragPreview = createDragPreview(task);
+        document.body.appendChild(task.dragPreview);
+        event.dataTransfer.setDragImage(task.dragPreview, 0, 0);
+        task.classList.add(draggedClass);
     };
 
     task.ondragend = function(event) {
-        task.classList.remove("draged");
-        console.log("ondragend "+ event.target.id) ;
-        task.style.position = 'static';
-
-        task.style.left = '';//event.pageX-shiftX +'px';
-        task.style.top = '';//event.pageY-shiftY + 'px';
-
-        let dragoverItems = document.getElementsByClassName("dragover");
-        for (item in dragoverItems) {
-            item.classList.remove("dragover");
-        }
-
+        console.log("task ondragend "+ event.target.id);
+        task.classList.remove(draggedClass);
+        task.dragPreview.remove();
+        currentDroppable = null;
     };
 
+    //  *** drag over this item events handling   *** //
     task.ondragenter = function (event) {
-        if (task !== currentDroppable) {
-            task.classList.add("dragover");
+        console.log("task " + task.id + ": ondragenter");
+        if (task === currentDroppable) {
+            //do something?
+        } else {
+            //hide previous placeholder and show new placeholder
+            task.dropaplePlaceholder = createPlaceholder();
+            task.dropaplePlaceholder.classList.add(expandClass);
+            task.after(task.dropaplePlaceholder);
         }
     };
-    task.ondrop = function () {
-        task.classList.remove("dragover");
+
+    task.ondragover = function (event) {
+        event.preventDefault(); //ugly hack to make this Element dropable
     };
+
     task.ondragleave = function (event) {
-        task.classList.remove("dragover");
-        task.parent.classList.remove("dragower");
-    }
+        console.log("task " + task.id + ": ondragleave ph=" + task.dropaplePlaceholder);
+        if (task.dropaplePlaceholder !== undefined) {
+            task.dropaplePlaceholder.classList.replace(expandClass, classCollapse);
+            task.dropaplePlaceholder = undefined;
+        }
+    };
+
+    task.ondrop = function () {
+        console.log("task " + task.id + ": ondrop ph=" + task.dropaplePlaceholder);
+        if (task.dropaplePlaceholder !== undefined) {
+            task.dropaplePlaceholder.remove();
+            task.after(currentDroppable);
+        }
+    };
 }
 
-columns = document.getElementsByClassName("column");
+for (let header of headers) {
 
-for (let column of columns) {
-    let hierarchyLevel = 0;
-    column.ondragenter = function(event) {
-        console.log("ondragenter "+ event.target.id);
-        hierarchyLevel++;
-        if (currentDroppable.parentNode !== column){
-            column.classList.add("dragower");
-        }
-    };
-
-    column.ondragover = function (event) {
+    header.ondragover = function (event) {
         event.preventDefault(); //ugly hack to make ondrop() works
     };
 
-    column.ondrop = function (event) {
-        console.log("ondrop " + event.target.id);
-        column.classList.remove("dragower");
-        column.parentNode.classList.remove("dragower");
-        currentDroppable.remove();
-        column.append(currentDroppable);
+    header.ondragenter = function (event) {
+        console.log("header: ondragenter");
+
+        header.dropaplePlaceholder = createPlaceholder();
+        header.dropaplePlaceholder.classList.add(expandClass);
+        header.after(header.dropaplePlaceholder);
     };
 
-    column.ondragleave = function(event) {
-        console.log("ondragleave " + event.target.id);
-        if (hierarchyLevel === 1) {
-            column.classList.remove("dragower");
+    header.ondragleave = function (event) {
+        console.log("header: ondragleave ph=" + header.dropaplePlaceholder);
+        if (header.dropaplePlaceholder !== undefined) {
+            header.dropaplePlaceholder.classList.replace(expandClass, classCollapse);
+            header.dropaplePlaceholder = undefined;
         }
-        hierarchyLevel--;
     };
 
+    header.ondrop = function () {
+        console.log("header: ondrop");
+        if (header.dropaplePlaceholder !== undefined) {
+            header.dropaplePlaceholder.remove();
+            header.after(currentDroppable);
+        }
+    }
 }
 
