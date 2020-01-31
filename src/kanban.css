@@ -35,6 +35,15 @@ body {
     cursor: move;
 }
 
+.taskAbsolute {
+    width: 220px;
+    height: 100px;
+    background: orange;
+    position: absolute;
+    left: 500px;
+    top: 500px;
+}
+
 @keyframes expandTo64 {
     0%   {height: 0px;}
     100% {height: 64px;}
