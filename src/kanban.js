@@ -3,88 +3,43 @@
 let currentDroppable;
 let placeholder;
 
-let tasks = document.getElementsByClassName("task");
-let headers = document.getElementsByClassName("header");
-
-const classExpand = "expandTask";
-const classCollapse = "collapseTask";
-
-function createPlaceholder() {
-    let placeholder = document.createElement("div");
-    placeholder.className = classExpand;
-    placeholder.ondragover = function (e) {
-        e.preventDefault();
+for (let task of document.getElementsByClassName("task")) {
+    task.draggable = true;
+    task.ondragstart = () => {
+        currentDroppable = task;
+        setTimeout( () =>
+            task.parentNode.replaceChild(createPlaceholder("taskPlaceholder"), currentDroppable), 1);
     };
+
+    task.ondragend = () => {
+        placeholder.parentNode.replaceChild(currentDroppable, placeholder);
+        placeholder = undefined;
+        currentDroppable = undefined;
+    };
+
+    task.ondragenter = () => expandPlaceholderBelow(task);
+}
+
+for (let header of document.getElementsByClassName("header")) {
+    header.ondragenter = () => expandPlaceholderBelow(header);
+}
+
+function expandPlaceholderBelow(element) {
+    if (currentDroppable === undefined) return;
+    element.after(createPlaceholder("expandTask"));
+}
+
+function createPlaceholder(className) {
+    if (placeholder !== undefined) {
+        let previousPlaceholder = placeholder;
+        previousPlaceholder.className = "collapseTask";
+        setTimeout( () => previousPlaceholder.remove(), 500);
+    }
+
+    placeholder = document.createElement("div");
+    placeholder.className = className;
     return placeholder;
 }
 
-for (let task of tasks) {
-
-    //  *** handle drag of this item    *** //
-    task.draggable = true;
-    task.ondragstart = function(event) {
-        console.log("task onDragStart()");
-        currentDroppable = task;
-        event.dataTransfer.effectAllowed='move';
-    };
-
-    task.ondragend = function(event) {
-        console.log("task ondragend "+ event.target.id);
-
-        if (placeholder !== undefined) {
-            placeholder.parentNode.replaceChild(currentDroppable, placeholder);
-            task.style.display = '';
-            placeholder = undefined;
-        }
-        currentDroppable = null;
-
-        let placeholders = document.getElementsByClassName(classCollapse);
-        for (let item of placeholders) {
-            item.remove();
-        }
-    };
-
-    //  *** drag over this item events handling   *** //
-    task.ondragenter = function (event) {
-        console.log("task " + task.id + ": ondragenter");
-        if (task === currentDroppable) {
-            placeholder = createPlaceholder();
-            placeholder.className = "taskPlaceholder";
-            task.after(placeholder);
-            task.style.display = 'none';
-            //do something?
-        } else {
-            //hide previous placeholder and show new placeholder
-            if (placeholder !== undefined) {
-                placeholder.className = classCollapse;
-            }
-            placeholder = createPlaceholder();
-            task.dropaplePlaceholder = placeholder;
-            task.dropaplePlaceholder.classList.add(classExpand);
-            task.after(task.dropaplePlaceholder);
-        }
-    };
-
-    task.ondragover = function (event) {
-        event.preventDefault(); //ugly hack to make this Element dropable
-    };
-}
-
-for (let header of headers) {
-
-    header.ondragover = function (event) {
-        event.preventDefault(); //ugly hack to make ondrop() works
-    };
-
-    header.ondragenter = function (event) {
-        console.log("header: ondragenter");
-
-        if (placeholder !== undefined) {
-            placeholder.className = classCollapse;
-        }
-
-        placeholder = createPlaceholder();
-        header.after(placeholder);
-    };
-}
-
+//disable default animations fro DnD
+document.ondragover = e => e.preventDefault();
