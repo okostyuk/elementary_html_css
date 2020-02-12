@@ -1,47 +1,64 @@
+const userModel = {
+    fname: 'oleg',
+    lname: 'kostiuk'
+};
+
+function printModel() {
+    console.log('user.fname = '+ userModel.fname + ' user.lname = ' + userModel.lname);
+}
+
+function bind(view, model) {
+    let modelChangesHandler = {
+        listeners: new Map(),
+
+        set: function(obj, prop, value) {
+            console.log('Model changed: ' + prop + ' = ' + value);
+            obj[prop] = value;
+            if (this.listeners.has(prop)) {
+                this.listeners.get(prop).call(this, value);
+            }
+            return true;
+        }
+    };
+
+    let elements = Array.from(view.getElementsByClassName('bindable')).filter( e =>
+        e !== undefined
+        && e.tagName === 'INPUT'
+        && e.hasAttribute('bindTo')
+    );
+
+    for (let element of elements) {
+        let propertyName = element.getAttribute('bindTo');
+        console.log('bind ' + element.id + ' to ' + propertyName);
+        element.addEventListener('change', function (e) {
+            if (e.isTrusted) {
+                model[propertyName] = e.target.value;
+            }
+        });
+        modelChangesHandler.listeners.set(propertyName, function (updatedValue) {
+            element.value = updatedValue;
+        });
+    }
+
+    return new Proxy(model, modelChangesHandler);
+}
+
 class ViewModel {
 
-    constructor(model, view) {
-        this.model = model;
+    constructor(view, model) {
         this.view = view;
-        this.printModel();
-        this.subscribeForViewEvents();
-        this.updateView();
-    }
-
-    updateModelProperty(name, value) {
-        this.model[name] = value;
-        this.printModel();
-    }
-
-    updateView() {
-        for (let propName of Object.getOwnPropertyNames(this.model)) {
-            let viewProp = document.getElementById(propName);
-            if (viewProp.tagName === 'INPUT') {
-                viewProp.value = this.model[propName];
-            }
-        }
-    }
-
-    printModel() {
-        console.log('user.fname = '+ this.model.fname + ' user.lname = ' + this.model.lname);
-    }
-
-    subscribeForViewEvents() {
-        for (let item of this.view.getElementsByClassName('bindable')) {
-            console.log("subscribeForViewEvents() " + item.id);
-            if (item.tagName === 'INPUT') {
-                item.addEventListener('change', e=> this.updateModelProperty(item.id, e.target.value));
-            }
-        }
+        this.model = bind(view, model);
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    let userModel = {
-        fname: 'oleg',
-        lname: 'kostiuk'
-    };
 
+
+document.addEventListener("DOMContentLoaded", function() {
     let userView = document.getElementById('user');
-    let viewModel = new ViewModel(userModel, userView);
+
+    let viewModel = new ViewModel(userView, userModel);
+    document.getElementById('testButton').addEventListener('click', function () {
+        console.log("click");
+        viewModel.model.fname = "Changed Name";
+    })
 });
