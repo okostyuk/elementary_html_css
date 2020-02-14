@@ -3,15 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="view.css" rel="stylesheet">
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
 </head>
 <body>
-<div id="user">
-    <label for="fname">fname</label>
-    <input id="fname" name="fname" class="bindable" bindTo="fname"/>
 
-    <label for="lname">lname</label>
-    <input id="lname" name="lname" class="bindable" bindTo="lname"/>
+<div id="selectList" data-bind="with-list: displayedHotels,
+                                item-click: selectHotel,
+                                text: name,
+                                id: id">
+    <input type="radio" id="contactChoice1" name="contact" value="email"  checked/>
+    <label for="contactChoice1">Email</label>
 </div>
+
+<div>
+    <label for="checkinDate">Check-in date</label><br/>
+    <input type="date" id="checkinDate" data-bind="change: checkinDateChanged"/>
+    <br/>
+    <br/>
+    <label for="checkoutDate">Check-out date</label><br/>
+    <input type="date" id="checkoutDate" data-bind="with: checkinDate, value: checkinDate, change: checkoutDateChanged"/>
+</div>
+
+<br/>
+<p>
+    Стоимость <b data-bind="nightsCount"></b> в выбранном отеле стоит <b data-bind="totalPrice"></b>"
+</p>
+
 <button id="testButton">TEST</button>
-<script type="text/javascript" src="MVVM.js"></script></body>
+<script type="text/javascript" src="Binder.js"></script>
+
+</body>
 </html>

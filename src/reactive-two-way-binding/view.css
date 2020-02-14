@@ -1,0 +1,11 @@
+body {
+    font-size: 24px;
+}
+
+#selectList {
+    width: 200px;
+}
+
+#selectList label {
+    font-size: 30px;
+}

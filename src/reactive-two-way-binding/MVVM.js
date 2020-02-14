@@ -21,33 +21,67 @@ function bind(view, model) {
         }
     };
 
+    
     let elements = Array.from(view.getElementsByClassName('bindable')).filter( e =>
         e !== undefined
-        && e.tagName === 'INPUT'
+        && e.tagName === 'FORM'
         && e.hasAttribute('bindTo')
     );
 
     for (let element of elements) {
         let propertyName = element.getAttribute('bindTo');
         console.log('bind ' + element.id + ' to ' + propertyName);
+
+        if (element.tagName === 'FORM') {
+            element.addEventListener('listChanged', function () {
+                console.log("listChanged handled");
+                for (let inputElement of element.getElementsByTagName('input')) {
+                    inputElement.addEventListener('change', function () {
+                        console.log("input element change");
+                    });
+                }
+            });
+
+            modelChangesHandler.listeners.set(propertyName, function (hotelsList) {
+                for (let hotel of hotelsList) {
+                    element.append(hotelToInputElement(hotel));
+                }
+                element.trigger('listChanged');
+            });
+        }
+
         element.addEventListener('change', function (e) {
             if (e.isTrusted) {
                 model[propertyName] = e.target.value;
             }
         });
-        modelChangesHandler.listeners.set(propertyName, function (updatedValue) {
-            element.value = updatedValue;
-        });
+
     }
 
     return new Proxy(model, modelChangesHandler);
+}
+
+function hotelToInputElement(hotel) {
+    return '<input type="radio" id="contactChoice1\" name="contact" value="email" checked>' +
+        '<label for="contactChoice1">Email</label>';
 }
 
 class ViewModel {
 
     constructor(view, model) {
         this.view = view;
-        this.model = bind(view, model);
+        this.model = bind(view, {});
+
+        this.repository = {
+            getHotels: function () {
+                let result = [];
+                for (let i=0; i<10; i++) {
+                    result[i] = { name: "Hotel " + i, price: Math.random() * 100 }
+                }
+            }
+        };
+
+        model.hotels = this.repository.getHotels();
     }
 }
 
@@ -57,6 +91,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let userView = document.getElementById('user');
 
     let viewModel = new ViewModel(userView, userModel);
+
+
     document.getElementById('testButton').addEventListener('click', function () {
         console.log("click");
         viewModel.model.fname = "Changed Name";
