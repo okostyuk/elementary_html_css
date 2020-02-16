@@ -15,78 +15,123 @@ const binder = {
             })
     },
 
-    processParam: function(node, bindingParamName, viewModelPropertyName) {
-        console.log('processParam ' + node + ' ' + bindingParamName + ' ' + viewModelPropertyName);
-        if ('change' === bindingParamName) {
-            node.addEventListener('change', e => this.viewModel[viewModelPropertyName].call(this, e.target.value));
-        } else if ('text' === bindingParamName) {
-            this.property2node.set(viewModelPropertyName, node);
-            let modelProperty =  this.viewModel[viewModelPropertyName];
-            if (typeof modelProperty === 'function') {
-                node.innerHTML = modelProperty.call(this);
-            } else {
-                node.innerHTML = modelProperty;
-            }
+    processParam: function(node, bindingParamName, bindingParamValue) {
+        console.log('processParam ' + node + ' ' + bindingParamName + ' ' + bindingParamValue);
+        switch (bindingParamName.trim()) {
+            case 'change':
+                node.addEventListener('change', e => this.viewModel[bindingParamValue].call(this, e.target.value));
+                break;
+            case 'items':
+            case 'text':
+                this.property2node.set(bindingParamValue, node);
+                let modelPropertyValue =  this.viewModel[bindingParamValue];
+                this.updateNodeValue(node,  modelPropertyValue);
+                break;
+            default:
+                console.error("Unsupported binding param: " + bindingParamName);
         }
     },
 
-    observable: function (propertyName) {
-        console.log('observable('+ propertyName + ')');
-        let valueHolder = {
-            value: undefined
-        };
+    updateNodeValue: function(node, nodeValue) {
+        let computedValue = (typeof nodeValue === 'function') ? nodeValue.call() : nodeValue;
+        console.log('updateNodeValue() ' + node.tagName + " " + computedValue);
+        switch (node.tagName) {
+            case 'P':
+            case 'B':
+                node.innerHTML = computedValue;
+                break;
+            case 'SELECT':
+                node.innerHTML = '';
+                let placeholder = document.createElement('option');
+                placeholder.disabled = true;
+                placeholder.text = "Choose ...";
+                placeholder.selected = true;
+                node.add(placeholder);
+                nodeValue.forEach(item => {
+                    let option = document.createElement("option");
+                    option.text = item.name;
+                    option.value= item.price;
+                    node.add(option);
+                });
+                break;
+            default:
+                console.error("Unsupported tag: " + node.tagName);
+        }
+    },
 
-        let resultFunctionHolder = { value: 'asd'};
-        let resultFunction =  function (updatedValue) {
-            if (arguments.length > 0) {
-                valueHolder.value = updatedValue;
-                console.log(propertyName + ' = ' + updatedValue);
-                let inputNode = binder.property2node.get(propertyName);
-                binder.parseNode(inputNode);
+    observable: function (initialValue) {
+        let valueHolder = { value: initialValue };
+        let selfHolder = { value: undefined};
+        let self = function (updatedValue) {
+            if (arguments.length === 0) { //means function called to get value
+                return valueHolder.value;
             }
-            return valueHolder.value;
+
+            valueHolder.value = updatedValue;
+            Object.keys(this).forEach( propertyName => {
+                if (this[propertyName] === selfHolder.value) {
+                    let inputNode = binder.property2node.get(propertyName);
+                    binder.updateNodeValue(inputNode, updatedValue);
+                }
+            });
         };
-        resultFunctionHolder.value = resultFunction;
-
-        return resultFunction;
+        selfHolder.value = self;
+        return self;
     }
 };
 
-const viewModel = {
+class ViewModel {
 
-    model: {
-        hotels: [
-            {id: '1', name: 'hotel_1', price: '1'},
-            {id: '2', name: 'hotel_2', price: '2'},
-            {id: '3', name: 'hotel_3', price: '3'},
-            {id: '4', name: 'hotel_4', price: '4'},
-            {id: '5', name: 'hotel_5', price: '5'}
-        ]
-    },
+    selectedRoomPrice = undefined;
+    checkinDate = undefined;
+    checkoutDate = undefined;
 
-    displayedHotels: [],
-    selectedHotel: undefined,
-    checkinDate: '55555',
-    checkoutDate: '',
+    displayedRooms = [
+        {name: 'hotel_1 1 Bed', price: 1.00},
+        {name: 'hotel_2 2 Bed', price: 2.00},
+        {name: 'hotel_3 3 Bed', price: 3.00},
+        {name: 'hotel_4 7 Bed', price: 7.00},
+        {name: 'hotel_5 9 Bed', price: 9.00}
+    ];
 
-    nightsCount: binder.observable('nightsCount'),
-    totalPrice: 0,
+    nightsCount = binder.observable(0);
+    totalPrice = binder.observable(0);
 
-    checkinDateChanged: function (updatedValue) {
-        console.log('checkinDateChanged ' + updatedValue);
-        viewModel.checkinDate = updatedValue;
-        viewModel.nightsCount(updatedValue);
-        console.log("nightsCountTest = " + viewModel.nightsCount());
-    },
+    checkinDateChanged(updatedValue) {
+        this.viewModel.checkinDate = new Date(updatedValue);
+        this.viewModel.calculateDays();
+        this.viewModel.calculate();
+    };
 
-    checkoutDateChanged: function (updatedValue) {
+    checkoutDateChanged(updatedValue) {
+        this.viewModel.checkoutDate = new Date(updatedValue);
+        this.viewModel.calculateDays();
+        this.viewModel.calculate();
+    };
 
-    },
-
-    selectHotel: function (hotelId) {
-
+    roomChanged(selectedRoomPrice) {
+        console.log("price = " + selectedRoomPrice);
+        this.viewModel.selectedRoomPrice = selectedRoomPrice;
+        this.viewModel.calculate();
     }
 
-};
+    calculateDays() {
+        if (this.checkinDate === undefined || this.checkoutDate === undefined) {
+            return;
+        }
 
-binder.applyBindings(viewModel);
+        let diffDays = Math.ceil(Math.abs(this.checkinDate - this.checkoutDate) / (1000 * 60 * 60 * 24));
+        this.nightsCount(diffDays);
+    };
+
+    calculate() {
+        if (this.checkinDate === undefined || this.checkoutDate === undefined || this.selectedRoomPrice === undefined) {
+            console.log(this.checkinDate + " " + this.checkoutDate + " " + this.selectedRoomPrice);
+            return;
+        }
+
+        this.totalPrice(this.selectedRoomPrice * this.nightsCount());
+    };
+}
+
+binder.applyBindings(new ViewModel());
