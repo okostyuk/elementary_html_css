@@ -1,0 +1,7 @@
+! Title: test1
+! Description: desc1.
+! Version: 1.0.0.0
+! TimeUpdated: 2020-08-26T23:30:46+03:00
+! Expires: 4 days (update frequency)
+
+rezka.ag#$?#body.active-brand { padding-top: 0!important; background: none!important; }
