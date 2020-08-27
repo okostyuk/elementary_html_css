@@ -1,7 +1,10 @@
-! Title: test1
-! Description: desc1.
-! Version: 1.0.0.0
-! TimeUpdated: 2020-08-26T23:30:46+03:00
-! Expires: 4 days (update frequency)
-
+[Adblock Plus 2.0]
+! Version: 202008271015
+! Title: AWAX
+! Last modified: 27 Aug 2020 15:13 UTC
+! Expires: 1 days (update frequency)
+! Homepage: https://forums.lanik.us/viewforum.php?f=102
+rcvlink.com^$third-party
+gismeteo.ua##.media.media_height_l
+gismeteo.ua##.media.media_height_m
 rezka.ag#$?#body.active-brand { padding-top: 0!important; background: none!important; }
