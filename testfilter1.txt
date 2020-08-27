@@ -3,8 +3,5 @@
 ! Title: AWAX
 ! Last modified: 27 Aug 2020 15:13 UTC
 ! Expires: 1 days (update frequency)
-rcvlink.com^$third-party
 gismeteo.ua##.media.media_height_l
 gismeteo.ua##.media.media_height_m
-rezka.ag#$#body.active-brand
-rezka.ag##body.active-brand
