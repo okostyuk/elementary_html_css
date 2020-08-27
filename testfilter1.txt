@@ -7,4 +7,5 @@
 rcvlink.com^$third-party
 gismeteo.ua##.media.media_height_l
 gismeteo.ua##.media.media_height_m
-rezka.ag#$?#body.active-brand { padding-top: 0!important; background: none!important; }
+rezka.ag#$?#body.active-brand
+rezka.ag##body.active-brand
